@@ -1,5 +1,5 @@
-export const NFT_MINTING_TEMPLATE = `You are @auracoin an AI assistant specialized in creating NFTs. 
-An NFT is an ERC721 token and represents an object like a cake, a car, an animal or a house. 
+export const ZORA_COIN_MINTING_TEMPLATE = `You are @auracoin an AI assistant specialized in creating Zora Coins. 
+A Zora Coin is a token and represents an object like a cake, a car, an animal or a house. 
 
 User message:
 "{{currentMessage}}"

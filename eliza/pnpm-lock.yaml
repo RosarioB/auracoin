@@ -167,9 +167,9 @@ importers:
       '@elizaos/plugin-bootstrap':
         specifier: workspace:*
         version: link:../packages/plugin-bootstrap
-      '@elizaos/plugin-nft':
+      '@elizaos/plugin-zora-coin':
         specifier: workspace:*
-        version: link:../packages/plugin-nft
+        version: link:../packages/plugin-zora-coin
       '@types/node':
         specifier: ^22.13.5
         version: 22.13.14
@@ -640,7 +640,7 @@ importers:
         version: 5.15.5
       '@lifi/sdk':
         specifier: 3.4.1
-        version: 3.4.1(@solana/wallet-adapter-base@0.9.24)(typescript@5.6.3)(viem@2.24.1(bufferutil@4.0.9)(typescript@5.6.3)(utf-8-validate@5.0.10)(zod@3.24.2))
+        version: 3.4.1(@solana/wallet-adapter-base@0.9.24(@solana/web3.js@1.95.8(bufferutil@4.0.9)(encoding@0.1.13)(utf-8-validate@5.0.10)))(@solana/web3.js@1.95.8(bufferutil@4.0.9)(encoding@0.1.13)(utf-8-validate@5.0.10))(typescript@5.6.3)(viem@2.24.1(bufferutil@4.0.9)(typescript@5.6.3)(utf-8-validate@5.0.10)(zod@3.24.2))
       '@lifi/types':
         specifier: 16.3.0
         version: 16.3.0
@@ -666,40 +666,6 @@ importers:
       whatwg-url:
         specifier: 7.1.0
         version: 7.1.0
-
-  packages/plugin-nft:
-    dependencies:
-      '@elizaos-plugins/plugin-evm':
-        specifier: workspace:*
-        version: link:../plugin-evm
-      '@elizaos-plugins/plugin-image-generation':
-        specifier: workspace:*
-        version: link:../plugin-image-generation
-      '@elizaos/core':
-        specifier: workspace:^
-        version: link:../core
-      '@neynar/nodejs-sdk':
-        specifier: ^2.23.0
-        version: 2.23.0(bufferutil@4.0.9)(encoding@0.1.13)(typescript@5.6.3)(utf-8-validate@5.0.10)(zod@3.24.1)
-      axios:
-        specifier: ^1.8.4
-        version: 1.8.4
-      pinata-web3:
-        specifier: ^0.5.4
-        version: 0.5.4
-      whatwg-url:
-        specifier: 7.1.0
-        version: 7.1.0
-      zod:
-        specifier: 3.24.1
-        version: 3.24.1
-    devDependencies:
-      '@types/node':
-        specifier: ^22.10.5
-        version: 22.13.14
-      tsup:
-        specifier: 8.3.5
-        version: 8.3.5(@swc/core@1.11.13(@swc/helpers@0.5.15))(jiti@1.21.7)(postcss@8.5.3)(typescript@5.6.3)(yaml@2.7.0)
 
   packages/plugin-tee:
     dependencies:
@@ -737,6 +703,40 @@ importers:
       '@biomejs/biome':
         specifier: 1.5.3
         version: 1.5.3
+
+  packages/plugin-zora-coin:
+    dependencies:
+      '@elizaos-plugins/plugin-evm':
+        specifier: workspace:*
+        version: link:../plugin-evm
+      '@elizaos-plugins/plugin-image-generation':
+        specifier: workspace:*
+        version: link:../plugin-image-generation
+      '@elizaos/core':
+        specifier: workspace:^
+        version: link:../core
+      '@neynar/nodejs-sdk':
+        specifier: ^2.23.0
+        version: 2.23.0(bufferutil@4.0.9)(encoding@0.1.13)(typescript@5.6.3)(utf-8-validate@5.0.10)(zod@3.24.1)
+      axios:
+        specifier: ^1.8.4
+        version: 1.8.4
+      pinata-web3:
+        specifier: ^0.5.4
+        version: 0.5.4
+      whatwg-url:
+        specifier: 7.1.0
+        version: 7.1.0
+      zod:
+        specifier: 3.24.1
+        version: 3.24.1
+    devDependencies:
+      '@types/node':
+        specifier: ^22.10.5
+        version: 22.13.14
+      tsup:
+        specifier: 8.3.5
+        version: 8.3.5(@swc/core@1.11.13(@swc/helpers@0.5.15))(jiti@1.21.7)(postcss@8.5.3)(typescript@5.6.3)(yaml@2.7.0)
 
 packages:
 
@@ -1926,7 +1926,7 @@ packages:
     resolution: {integrity: sha512-/u1VTzw7XooK7rqeD7JLUSwOyRSesPUk0U37BV9zK0axJc1q0nRbKFGFLYCQ16OtdOJTTwGfGp11Lx9B45bRCQ==}
     engines: {node: '>=10'}
     peerDependencies:
-      '@solana/web3.js': npm:@solana/web3.js@1.95.5
+      '@solana/web3.js': ^1.68.0
 
   '@cosmjs/amino@0.33.1':
     resolution: {integrity: sha512-WfWiBf2EbIWpwKG9AOcsIIkR717SY+JdlXM/SL/bI66BdrhniAF+/ZNis9Vo9HF6lP2UU5XrSmFA4snAvEgdrg==}
@@ -2988,7 +2988,7 @@ packages:
     resolution: {integrity: sha512-8jctwg+EYj4AFhfLCQbkz9TUwE+8AZtWxfCTSgzl2FBWwgPBgnK4l0OWZ7HejZSt5BXtxtytk2JAphhHtvtCag==}
     peerDependencies:
       '@solana/wallet-adapter-base': ^0.9.0
-      '@solana/web3.js': npm:@solana/web3.js@1.95.5
+      '@solana/web3.js': ^1.93.0
       viem: 2.24.1
 
   '@lifi/types@16.3.0':
@@ -4222,31 +4222,31 @@ packages:
     resolution: {integrity: sha512-7+80nrEMdUKlK37V6kOe024+T7J4nNss0F8LQ9OOPYdWCCfJmsGUzVx2W3oeizZR4IHM6N4yC9v1Xqwc3BTPWw==}
     engines: {node: '>=16'}
     peerDependencies:
-      '@solana/web3.js': npm:@solana/web3.js@1.95.5
+      '@solana/web3.js': ^1.91.6
 
   '@solana/spl-token-group@0.0.7':
     resolution: {integrity: sha512-V1N/iX7Cr7H0uazWUT2uk27TMqlqedpXHRqqAbVO2gvmJyT0E0ummMEAVQeXZ05ZhQ/xF39DLSdBp90XebWEug==}
     engines: {node: '>=16'}
     peerDependencies:
-      '@solana/web3.js': npm:@solana/web3.js@1.95.5
+      '@solana/web3.js': ^1.95.3
 
   '@solana/spl-token-metadata@0.1.6':
     resolution: {integrity: sha512-7sMt1rsm/zQOQcUWllQX9mD2O6KhSAtY1hFR2hfFwgqfFWzSY9E9GDvFVNYUI1F0iQKcm6HmePU9QbKRXTEBiA==}
     engines: {node: '>=16'}
     peerDependencies:
-      '@solana/web3.js': npm:@solana/web3.js@1.95.5
+      '@solana/web3.js': ^1.95.3
 
   '@solana/spl-token@0.4.6':
     resolution: {integrity: sha512-1nCnUqfHVtdguFciVWaY/RKcQz1IF4b31jnKgAmjU9QVN1q7dRUkTEWJZgTYIEtsULjVnC9jRqlhgGN39WbKKA==}
     engines: {node: '>=16'}
     peerDependencies:
-      '@solana/web3.js': npm:@solana/web3.js@1.95.5
+      '@solana/web3.js': ^1.91.6
 
   '@solana/spl-token@0.4.9':
     resolution: {integrity: sha512-g3wbj4F4gq82YQlwqhPB0gHFXfgsC6UmyGMxtSLf/BozT/oKd59465DbnlUK8L8EcimKMavxsVAMoLcEdeCicg==}
     engines: {node: '>=16'}
     peerDependencies:
-      '@solana/web3.js': npm:@solana/web3.js@1.95.5
+      '@solana/web3.js': ^1.95.3
 
   '@solana/spl-type-length-value@0.1.0':
     resolution: {integrity: sha512-JBMGB0oR4lPttOZ5XiUGyvylwLQjt1CPJa6qQ5oM+MBCndfjz2TKKkw0eATlLLcYmq1jBVsNlJ2cD6ns2GR7lA==}
@@ -4256,7 +4256,7 @@ packages:
     resolution: {integrity: sha512-f3kwHF/2Lx3YgcO37B45MM46YLFy4QkdLemZ+N/0SwLAnSfhq3+Vb9bC5vuoupMJ/onos09TIDeIxRdg/+51kw==}
     engines: {node: '>=20'}
     peerDependencies:
-      '@solana/web3.js': npm:@solana/web3.js@1.95.5
+      '@solana/web3.js': ^1.77.3
 
   '@solana/wallet-standard-features@1.3.0':
     resolution: {integrity: sha512-ZhpZtD+4VArf6RPitsVExvgkF+nGghd1rzPjd97GmBximpnt1rsUxMOEyoIEuH3XBxPyNB6Us7ha7RHWQR+abg==}
@@ -16631,13 +16631,14 @@ snapshots:
     dependencies:
       '@lifi/types': 16.3.0
 
-  '@lifi/sdk@3.4.1(@solana/wallet-adapter-base@0.9.24)(typescript@5.6.3)(viem@2.24.1(bufferutil@4.0.9)(typescript@5.6.3)(utf-8-validate@5.0.10)(zod@3.24.2))':
+  '@lifi/sdk@3.4.1(@solana/wallet-adapter-base@0.9.24(@solana/web3.js@1.95.8(bufferutil@4.0.9)(encoding@0.1.13)(utf-8-validate@5.0.10)))(@solana/web3.js@1.95.8(bufferutil@4.0.9)(encoding@0.1.13)(utf-8-validate@5.0.10))(typescript@5.6.3)(viem@2.24.1(bufferutil@4.0.9)(typescript@5.6.3)(utf-8-validate@5.0.10)(zod@3.24.2))':
     dependencies:
       '@bigmi/core': 0.0.4(bitcoinjs-lib@7.0.0-rc.0(typescript@5.6.3))(bs58@5.0.0)(viem@2.24.1(bufferutil@4.0.9)(typescript@5.6.3)(utf-8-validate@5.0.10)(zod@3.24.2))
       '@lifi/types': 16.3.0
       '@noble/curves': 1.8.1
       '@noble/hashes': 1.7.1
-      '@solana/wallet-adapter-base': 0.9.24
+      '@solana/wallet-adapter-base': 0.9.24(@solana/web3.js@1.95.8(bufferutil@4.0.9)(encoding@0.1.13)(utf-8-validate@5.0.10))
+      '@solana/web3.js': 1.95.8(bufferutil@4.0.9)(encoding@0.1.13)(utf-8-validate@5.0.10)
       bech32: 2.0.0
       bitcoinjs-lib: 7.0.0-rc.0(typescript@5.6.3)
       bs58: 5.0.0
@@ -18190,9 +18191,10 @@ snapshots:
     dependencies:
       buffer: 6.0.3
 
-  '@solana/wallet-adapter-base@0.9.24':
+  '@solana/wallet-adapter-base@0.9.24(@solana/web3.js@1.95.8(bufferutil@4.0.9)(encoding@0.1.13)(utf-8-validate@5.0.10))':
     dependencies:
       '@solana/wallet-standard-features': 1.3.0
+      '@solana/web3.js': 1.95.8(bufferutil@4.0.9)(encoding@0.1.13)(utf-8-validate@5.0.10)
       '@wallet-standard/base': 1.1.0
       '@wallet-standard/features': 1.1.0
       eventemitter3: 4.0.7

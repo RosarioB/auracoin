@@ -16,17 +16,17 @@ import {
     type WalletProvider,
 } from "@elizaos-plugins/plugin-evm";
 import type {
-    NftMintingParams,
-    NftMintingTransaction,
+    ZoraCoinMintingParams,
+    ZoraCoinMintingTransaction,
 } from "../types/index.js";
-import { isNftMintingContent, NftMintingContent } from "../types/index.js";
-import { NFT_MINTING_TEMPLATE } from "../templates/nftMintingTemplate.js";
+import { isZoraCoinMintingContent, ZoraCoinMintingContent } from "../types/index.js";
+import { ZORA_COIN_MINTING_TEMPLATE } from "../templates/zoraCoinMintingTemplate.js";
 import { generateAiImage } from "../lib/imageGeneration.js";
 import { validateImageGenConfig } from "@elizaos-plugins/plugin-image-generation";
 import { uploadJsonToPinata } from "../lib/pinata.js";
 import { parseAbi } from "viem";
 import { config } from "../lib/config.js";
-import { createNft } from "../lib/api.js";
+import { createZoraCoin } from "../lib/api.js";
 import { getChainKeyById, getRecipientAddress } from "../lib/utils.js";
 
 const ERC721_ADDRESS = config.erc721_address as `0x${string}`;
@@ -36,7 +36,7 @@ const erc721Abi = parseAbi([
     "function safeMint(address to, string memory uri) public returns (uint256)",
 ]);
 
-export class NftMintingAction {
+export class ZoraCoinMintingAction {
     private currentChainKey: SupportedChain;
 
     constructor(private walletProvider: WalletProvider) {
@@ -49,9 +49,9 @@ export class NftMintingAction {
         return this.currentChainKey;
     }
 
-    async mint(params: NftMintingParams): Promise<NftMintingTransaction> {
+    async mint(params: ZoraCoinMintingParams): Promise<ZoraCoinMintingTransaction> {
         elizaLogger.info(
-            `Minting NFT with TokenURI ${params.jsonHash} to ${params.recipient}`
+            `Minting Zora Coin with TokenURI ${params.jsonHash} to ${params.recipient}`
         );
         const currentChain = this.walletProvider.getCurrentChain();
         const account = this.walletProvider.account;
@@ -77,13 +77,13 @@ export class NftMintingAction {
             });
 
             elizaLogger.info(
-                `Successfully minted NFT n. ${totalSupply} to ${params.recipient} with transaction Hash: ${txHash}`
+                `Successfully minted Zora Coin n. ${totalSupply} to ${params.recipient} with transaction Hash: ${txHash}`
             );
 
             const imageUrl = `https://${config.pinata_gateway_url}/ipfs/${params.imageHash}`;
             const jsonUrl = `ipfs://${params.jsonHash}`;
 
-            await createNft({
+            await createZoraCoin({
                 id: totalSupply.toString(),
                 name: params.name,
                 description: params.description,
@@ -108,32 +108,32 @@ export class NftMintingAction {
     }
 }
 
-const buildNftMintingDetails = async (
+const buildZoraCoinMintingDetails = async (
     state: State,
     runtime: IAgentRuntime,
     wp: WalletProvider
-): Promise<NftMintingContent> => {
+): Promise<ZoraCoinMintingContent> => {
     const chains = Object.keys(wp.chains);
     state.supportedChains = chains.map((item) => `"${item}"`).join("|");
 
     const context = composeContext({
         state,
-        template: NFT_MINTING_TEMPLATE,
+        template: ZORA_COIN_MINTING_TEMPLATE,
     });
 
-    const promptNftDetails = (await generateObjectDeprecated({
+    const promptZoraCoinDetails = (await generateObjectDeprecated({
         runtime,
         context,
         modelClass: ModelClass.SMALL,
-    })) as NftMintingContent;
+    })) as ZoraCoinMintingContent;
 
-    return promptNftDetails;
+    return promptZoraCoinDetails;
 };
 
-export const nftMintingAction: Action = {
-    name: "MINT_NFT",
+export const zoraCoinMintingAction: Action = {
+    name: "MINT_ZORA_COIN",
     similes: ["MINT_TOKEN", "CREATE_TOKEN", "BUILD_TOKEN"],
-    description: "Mints NFTs",
+    description: "Mints Zora Coins",
     validate: async (runtime: IAgentRuntime) => {
         const privateKey = runtime.getSetting("EVM_PRIVATE_KEY");
         const isPrivateKeyValid =
@@ -180,21 +180,21 @@ export const nftMintingAction: Action = {
 
         currentState.currentMessage = `${currentState.recentMessagesData[1].content.text}`;
 
-        elizaLogger.info("NftMinting action handler called");
+        elizaLogger.info("ZoraCoinMinting action handler called");
         const walletProvider = await initWalletProvider(runtime);
-        const action = new NftMintingAction(walletProvider);
+        const action = new ZoraCoinMintingAction(walletProvider);
 
-        const extractedData = await buildNftMintingDetails(
+        const extractedData = await buildZoraCoinMintingDetails(
             currentState,
             runtime,
             walletProvider
         );
 
-        if (!isNftMintingContent(extractedData)) {
-            elizaLogger.error("Invalid content for MINT_NFT action.");
+        if (!isZoraCoinMintingContent(extractedData)) {
+            elizaLogger.error("Invalid content for MINT_ZORA_COIN action.");
             callback({
-                text: "Invalid NftMinting details. Ensure name, description, and recipient are correctly specified.",
-                content: { error: "Invalid mint NFT content" },
+                text: "Invalid ZoraCoinMinting details. Ensure name, description, and recipient are correctly specified.",
+                content: { error: "Invalid mint Zora Coin content" },
             });
             return false;
         }
@@ -217,7 +217,7 @@ export const nftMintingAction: Action = {
             imageHash
         );
 
-        const nftMintingParams: NftMintingParams = {
+        const zoraCoinMintingParams: ZoraCoinMintingParams = {
             jsonHash: jsonHash,
             recipient: recipientAddress,
             name: extractedData.name,
@@ -226,16 +226,16 @@ export const nftMintingAction: Action = {
         };
 
         try {
-            const transferResp = await action.mint(nftMintingParams);
+            const transferResp = await action.mint(zoraCoinMintingParams);
             const currentChain = walletProvider.getCurrentChain();
             const txUrl = `${currentChain.blockExplorers.default.url}/tx/${transferResp.hash}`;
 
             if (callback) {
                 callback({
-                    text: `Successfully minted the NFT of ${extractedData.description} to ${recipient}. Check out the transaction: ${txUrl}`,
+                    text: `Successfully minted the Zora Coin of ${extractedData.description} to ${recipient}. Check out the transaction: ${txUrl}`,
                     content: {
                         success: true,
-                        nftId: transferResp.id,
+                        zoraCoinId: transferResp.id,
                         hash: transferResp.hash,
                         recipientAddress,
                         recipient: recipient,
@@ -247,10 +247,10 @@ export const nftMintingAction: Action = {
             }
             return true;
         } catch (error) {
-            elizaLogger.error("Error during minting the NFT:", error);
+            elizaLogger.error("Error during minting the Zora Coin:", error);
             if (callback) {
                 callback({
-                    text: `Error minting the NFT: ${error.message}`,
+                    text: `Error minting the Zora Coin: ${error.message}`,
                     content: { error: error.message },
                 });
             }
@@ -263,42 +263,42 @@ export const nftMintingAction: Action = {
                 user: "{{user1}}",
                 content: {
                     text: "@auracoin Send a golden cat to 0x742d35Cc6634C0532925a3b844Bc454e4438f44",
-                    action: "MINT_NFT",
+                    action: "MINT_ZORA_COIN",
                 },
             },
             {
                 user: "{{agentName}}",
                 content: {
-                    text: "Successfully minted NFT of ID 1 to 0x742d35Cc6634C0532925a3b844Bc454e4438f44. Check the transaction at this URL:https://sepolia.basescan.org/tx/0x625f1ccf068bb71c5b0a385297f7a0bfa5a32b23f4d08c3e2c41158ac468e3a2 ---imageUrl:https://apricot-obvious-xerinae-783.mypinata.cloud/ipfs/bafybeidwnwsaadwtoregkjdfvaivmaslxragxzkjwk2zgp7jkw4th2xzm6---",
-                    action: "MINT_NFT",
+                    text: "Successfully minted Zora Coin of ID 1 to 0x742d35Cc6634C0532925a3b844Bc454e4438f44. Check the transaction at this URL:https://sepolia.basescan.org/tx/0x625f1ccf068bb71c5b0a385297f7a0bfa5a32b23f4d08c3e2c41158ac468e3a2 ---imageUrl:https://apricot-obvious-xerinae-783.mypinata.cloud/ipfs/bafybeidwnwsaadwtoregkjdfvaivmaslxragxzkjwk2zgp7jkw4th2xzm6---",
+                    action: "MINT_ZORA_COIN",
                 },
             },
             {
                 user: "{{user1}}",
                 content: {
                     text: "@auracoin Send a cake to @someaccount",
-                    action: "MINT_NFT",
+                    action: "MINT_ZORA_COIN",
                 },
             },
             {
                 user: "{{agentName}}",
                 content: {
-                    text: "Successfully minted NFT of ID 2 to @someaccount. Check the transaction at this URL:https://sepolia.basescan.org/tx/0x625f1ccf068bb71c5b0a385297f7a0bfa5a32b23f4d08c3e2c41158ac468e3a2 ---imageUrl:https://apricot-obvious-xerinae-783.mypinata.cloud/ipfs/bafybeidwnwsaadwtoregkjdfvaivmaslxragxzkjwk2zgp7jkw4th2xzm6---",
-                    action: "MINT_NFT",
+                    text: "Successfully minted Zora Coin of ID 2 to @someaccount. Check the transaction at this URL:https://sepolia.basescan.org/tx/0x625f1ccf068bb71c5b0a385297f7a0bfa5a32b23f4d08c3e2c41158ac468e3a2 ---imageUrl:https://apricot-obvious-xerinae-783.mypinata.cloud/ipfs/bafybeidwnwsaadwtoregkjdfvaivmaslxragxzkjwk2zgp7jkw4th2xzm6---",
+                    action: "MINT_ZORA_COIN",
                 },
             },
             {
                 user: "{{user1}}",
                 content: {
                     text: "@auracoin Create a fabolus car and send it to vitalik.eth",
-                    action: "MINT_NFT",
+                    action: "MINT_ZORA_COIN",
                 },
             },
             {
                 user: "{{agentName}}",
                 content: {
-                    text: "Successfully minted NFT of ID 3 to vitalik.eth. Check the transaction at this URL:https://sepolia.basescan.org/tx/0x625f1ccf068bb71c5b0a385297f7a0bfa5a32b23f4d08c3e2c41158ac468e3a2 ---imageUrl:https://apricot-obvious-xerinae-783.mypinata.cloud/ipfs/bafybeidwnwsaadwtoregkjdfvaivmaslxragxzkjwk2zgp7jkw4th2xzm6---",
-                    action: "MINT_NFT",
+                    text: "Successfully minted Zora Coin of ID 3 to vitalik.eth. Check the transaction at this URL:https://sepolia.basescan.org/tx/0x625f1ccf068bb71c5b0a385297f7a0bfa5a32b23f4d08c3e2c41158ac468e3a2 ---imageUrl:https://apricot-obvious-xerinae-783.mypinata.cloud/ipfs/bafybeidwnwsaadwtoregkjdfvaivmaslxragxzkjwk2zgp7jkw4th2xzm6---",
+                    action: "MINT_ZORA_COIN",
                 },
             },
         ],

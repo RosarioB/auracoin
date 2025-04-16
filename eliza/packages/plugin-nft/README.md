@@ -1,1 +1,0 @@
-# @elizaos/plugin-nft

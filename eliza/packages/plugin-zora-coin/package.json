@@ -1,5 +1,5 @@
 {
-    "name": "@elizaos/plugin-nft",
+    "name": "@elizaos/plugin-zora-coin",
     "version": "0.25.9",
     "type": "module",
     "main": "dist/index.js",
