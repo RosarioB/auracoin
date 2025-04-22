@@ -67,7 +67,7 @@ export class ZoraCoinMintingAction {
                 platformReferrer: account.address,
                 owners: [params.recipient as `0x${string}`],
             };
-            
+
             elizaLogger.info(`Coin params: ${JSON.stringify(coinParams)}`);
 
             const result = await createCoin(coinParams, walletClient, publicClient);
@@ -215,8 +215,7 @@ export const zoraCoinMintingAction: Action = {
             walletProvider
         );
 
-        // DA RIATTIVARE
-        /* const imageHash = await generateAiImage(
+        const imageHash = await generateAiImage(
             runtime,
             extractedData.description
         );
@@ -224,10 +223,7 @@ export const zoraCoinMintingAction: Action = {
             extractedData.name || "",
             extractedData.description,
             imageHash
-        ); */
-
-        const jsonHash = "bafkreigfekxuwzzywgvq7l4c6tfyimr4gmye6drqhsyl3e3hbdzilqeniq";
-        const imageHash = "bafybeic6f2btpoueqkbps5bhzcb5ria4umv5tu5bzvhwdgjyrjprwk5wgq";
+        );
 
         const zoraCoinMintingParams: ZoraCoinMintingParams = {
             jsonHash,
