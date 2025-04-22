@@ -7,7 +7,6 @@ function getEnvVariable(key: string): string {
 }
 
 export const config = {
-  erc721_address: getEnvVariable("ERC721_ADDRESS"),
   evm_private_key: getEnvVariable("EVM_PRIVATE_KEY"),
   pinata_jwt: getEnvVariable("PINATA_JWT"),
   pinata_gateway_url: getEnvVariable("PINATA_GATEWAY_URL"),
