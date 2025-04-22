@@ -4,7 +4,7 @@ import { config } from "../config/config.js";
 
 export async function connectToMongoDB() {
   try {
-    await mongoose.connect(config.mongodb_url, { dbName: "auracoin" });
+    await mongoose.connect(config.mongodb_url, { dbName: "Auracoin" });
     logWithTimestamp(`Successfully connected to Mongo DB`);
   } catch (err) {
     errorWithTimestamp(`Error connecting to Mongo DB`, err);
