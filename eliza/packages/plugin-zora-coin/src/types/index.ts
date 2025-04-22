@@ -53,4 +53,5 @@ export interface ZoraCoinMintingTransaction {
     symbol: string;
     address: string;
     coinId: number;
+    zoraCoinUrl: string;
 }

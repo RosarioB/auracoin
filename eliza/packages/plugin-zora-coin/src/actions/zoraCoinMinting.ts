@@ -105,6 +105,7 @@ export class ZoraCoinMintingAction {
                 symbol,
                 address: result.address,
                 coinId,
+                zoraCoinUrl,
             };
         } catch (error) {
             throw new Error(
@@ -240,15 +241,10 @@ export const zoraCoinMintingAction: Action = {
 
             if (callback) {
                 callback({
-                    text: `Successfully minted the Zora Coin of ${extractedData.description} to ${recipient}. Check out the transaction: ${txUrl}`,
+                    text: `Successfully minted Zora Coin of ${extractedData.description} to ${recipient}.`,
                     content: {
                         success: true,
-                        hash: transferResp.hash,
-                        recipientAddress,
-                        recipient: recipient,
-                        tokenUri: transferResp.tokenUri,
-                        imageUrl: transferResp.imageUrl,
-                        txUrl: txUrl,
+                        zoraCoinUrl: transferResp.zoraCoinUrl,
                     },
                 });
             }
