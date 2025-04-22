@@ -14,8 +14,8 @@ export interface ZoraCoinMintingContent {
 }
 
 export const ZoraCoinSchema = z.object({
-    name: z.string(),
-    description: z.string(),
+    name: z.string().refine(val => val.trim().length > 0, "Name cannot be blank"),
+    description: z.string().refine(val => val.trim().length > 0, "Description cannot be blank"),
     recipient: z.string().refine(
         (value) =>
             /^0x[a-fA-F0-9]{40}$/.test(value) || 
@@ -28,13 +28,13 @@ export const ZoraCoinSchema = z.object({
 });
 
 export const isZoraCoinMintingContent = (object: any): object is ZoraCoinMintingContent => {
-    if (ZoraCoinSchema.safeParse(object).success) {
+    const result = ZoraCoinSchema.safeParse(object);
+    if (result.success) {
         return true;
     }
-    elizaLogger.error("Invalid content: ", object);
+    elizaLogger.error("Validation error: ", result.error.format());
     return false;
 };
-
 export interface ZoraCoinMintingParams {
     jsonHash: string;
     recipient: string;
@@ -42,12 +42,15 @@ export interface ZoraCoinMintingParams {
     description: string;
     imageHash: string;
 }
-
 export interface ZoraCoinMintingTransaction {
-    id: string;
     hash: string;
     from: string;
     to: string;
     tokenUri: string;
     imageUrl: string;
+    name: string;
+    description: string;
+    symbol: string;
+    address: string;
+    coinId: number;
 }

@@ -25,7 +25,7 @@
         "@elizaos/core": "workspace:*",
         "@elizaos/plugin-bootstrap": "workspace:*",
         "@elizaos/plugin-zora-coin": "workspace:*",
-        "@types/node": "^22.13.5",
+        "@types/node": "^20.13.0",
         "json5": "2.2.3",
         "ts-node": "^10.9.2",
         "yargs": "17.7.2"

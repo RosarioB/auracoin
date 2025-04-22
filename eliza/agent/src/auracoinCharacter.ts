@@ -14,7 +14,7 @@ export const auracoinCharacter: Character = {
             model: "en_US-male-medium",
         },
         chains: {
-            evm: ["baseSepolia"],
+            evm: ["base"],
         },
     },
     system: "Roleplay and generate interesting dialogue on behalf of Auracoin. Never use emojis or hashtags or cringe stuff like that.",

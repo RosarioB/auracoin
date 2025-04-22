@@ -31,7 +31,7 @@ class WebhookService {
 
     const responseData = agentResponse.data;
     const mintData = responseData.find((item) =>
-      item.text.startsWith("Successfully minted the NFT")
+      item.text.startsWith("Successfully minted Zora Coin")
     );
     this.validateData(mintData);
     logWithTimestamp(`Agent response data: ${JSON.stringify(mintData)}`);
@@ -41,7 +41,7 @@ class WebhookService {
     const textToPublish = `@${author} ${mintData.text}`;
     const castResponse = await this.publishCast({
       text: textToPublish,
-      imageUrl: mintData.content.imageUrl,
+      zoraCoinUrl: mintData.content.zoraCoinUrl,
       parentCastHash
     }
     );
@@ -50,7 +50,7 @@ class WebhookService {
 
   private validateData(mintData: AgentResponseData) {
     if (!mintData) {
-      throw new Error("No successfully minted NFT data found.");
+      throw new Error("No successfully minted ZoraCoin data found.");
     }
     if (!mintData.text || !mintData.content.imageUrl) {
       throw new Error("Mint data text or image URL is missing.");
@@ -58,7 +58,7 @@ class WebhookService {
   }
 
   async publishCast(
-    castData: { text: string; imageUrl: string; parentCastHash: string }
+    castData: { text: string; zoraCoinUrl: string; parentCastHash: string }
   ): Promise<PostCastResponse> {
     try {
       const neynarResponse = await neynarClient.publishCast({
@@ -67,12 +67,12 @@ class WebhookService {
         parent: castData.parentCastHash,
         embeds: [
           {
-            url: castData.imageUrl,
+            url: castData.zoraCoinUrl,
           },
         ],
       });
       logWithTimestamp(
-        `Published cast: ${castData.text} \nEmbedded image URL ${castData.imageUrl}`
+        `Published cast: ${castData.text} \nEmbedded image URL ${castData.zoraCoinUrl}`
       );
       return neynarResponse;
     } catch (error) {

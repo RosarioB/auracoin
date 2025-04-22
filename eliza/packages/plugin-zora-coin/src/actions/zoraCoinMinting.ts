@@ -24,17 +24,10 @@ import { ZORA_COIN_MINTING_TEMPLATE } from "../templates/zoraCoinMintingTemplate
 import { generateAiImage } from "../lib/imageGeneration.js";
 import { validateImageGenConfig } from "@elizaos-plugins/plugin-image-generation";
 import { uploadJsonToPinata } from "../lib/pinata.js";
-import { parseAbi } from "viem";
 import { config } from "../lib/config.js";
-import { createZoraCoin } from "../lib/api.js";
+import { saveZoraCoin, countZoraCoins } from "../lib/api.js";
 import { getChainKeyById, getRecipientAddress } from "../lib/utils.js";
-
-const ERC721_ADDRESS = config.erc721_address as `0x${string}`;
-
-const erc721Abi = parseAbi([
-    "function totalSupply() public view returns (uint256)",
-    "function safeMint(address to, string memory uri) public returns (uint256)",
-]);
+import { createCoin, CreateCoinArgs } from "@zoralabs/coins-sdk";
 
 export class ZoraCoinMintingAction {
     private currentChainKey: SupportedChain;
@@ -58,51 +51,64 @@ export class ZoraCoinMintingAction {
         const walletClient = this.walletProvider.getWalletClient(
             this.currentChainKey
         );
+
+        const publicClient = this.walletProvider.getPublicClient(this.currentChainKey);
+        const imageUrl = `https://${config.pinata_gateway_url}/ipfs/${params.imageHash}`;
+        const jsonUrl = `ipfs://${params.jsonHash}`;
+        const coinId = (await countZoraCoins()) + 1;
+        const symbol = "AURA";
+
         try {
-            const totalSupply = await this.walletProvider
-                .getPublicClient(this.currentChainKey)
-                .readContract({
-                    address: ERC721_ADDRESS,
-                    abi: erc721Abi,
-                    functionName: "totalSupply",
-                    args: [],
-                });
-            const txHash = await walletClient.writeContract({
-                address: ERC721_ADDRESS,
-                abi: erc721Abi,
-                functionName: "safeMint",
-                args: [params.recipient as `0x${string}`, params.jsonHash],
-                chain: currentChain,
-                account: account,
-            });
+            const coinParams: CreateCoinArgs = {
+                name: params.name,
+                symbol,
+                uri: jsonUrl,
+                payoutRecipient: params.recipient as `0x${string}`,
+                platformReferrer: account.address,
+                owners: [params.recipient as `0x${string}`],
+            };
+            
+            elizaLogger.info(`Coin params: ${JSON.stringify(coinParams)}`);
+
+            const result = await createCoin(coinParams, walletClient, publicClient);
+            const zoraCoinUrl = `https://zora.co/coin/base:${result.address}`
 
             elizaLogger.info(
-                `Successfully minted Zora Coin n. ${totalSupply} to ${params.recipient} with transaction Hash: ${txHash}`
+                `Successfully minted Zora Coin of name ${params.name} and id ${coinId} and address ${result.address}.`
             );
-
-            const imageUrl = `https://${config.pinata_gateway_url}/ipfs/${params.imageHash}`;
-            const jsonUrl = `ipfs://${params.jsonHash}`;
-
-            await createZoraCoin({
-                id: totalSupply.toString(),
+            await saveZoraCoin({
+                coinId,
                 name: params.name,
                 description: params.description,
                 imageUrl: imageUrl,
                 jsonIpfsUrl: jsonUrl,
-                owner: params.recipient,
+                owner: account.address,
+                address: result.address,
+                symbol: result.deployment.symbol,
+                txHash: result.hash,
+                payoutRecipient: result.deployment.payoutRecipient,
+                platformReferrer: result.deployment.platformReferrer,
+                currency: result.deployment.currency,
+                pool: result.deployment.pool,
+                version: result.deployment.version,
+                zoraCoinUrl: zoraCoinUrl,
             });
 
             return {
-                id: totalSupply.toString(),
-                hash: txHash,
+                hash: result.hash,
                 from: walletClient.account.address,
                 to: params.recipient,
                 tokenUri: params.jsonHash,
                 imageUrl,
+                name: params.name,
+                description: params.description,
+                symbol,
+                address: result.address,
+                coinId,
             };
         } catch (error) {
             throw new Error(
-                `Calling the mint function on the smart contract failed: ${error.message}`
+                `Error during minting the Zora Coin: ${error.message}`
             );
         }
     }
@@ -132,7 +138,7 @@ const buildZoraCoinMintingDetails = async (
 
 export const zoraCoinMintingAction: Action = {
     name: "MINT_ZORA_COIN",
-    similes: ["MINT_TOKEN", "CREATE_TOKEN", "BUILD_TOKEN"],
+    similes: ["MINT_TOKEN", "CREATE_TOKEN", "BUILD_TOKEN", "MINT_COIN", "CREATE_COIN"],
     description: "Mints Zora Coins",
     validate: async (runtime: IAgentRuntime) => {
         const privateKey = runtime.getSetting("EVM_PRIVATE_KEY");
@@ -190,6 +196,8 @@ export const zoraCoinMintingAction: Action = {
             walletProvider
         );
 
+        elizaLogger.info(`Extracted data: ${JSON.stringify(extractedData)}`);
+
         if (!isZoraCoinMintingContent(extractedData)) {
             elizaLogger.error("Invalid content for MINT_ZORA_COIN action.");
             callback({
@@ -207,7 +215,8 @@ export const zoraCoinMintingAction: Action = {
             walletProvider
         );
 
-        const imageHash = await generateAiImage(
+        // DA RIATTIVARE
+        /* const imageHash = await generateAiImage(
             runtime,
             extractedData.description
         );
@@ -215,14 +224,17 @@ export const zoraCoinMintingAction: Action = {
             extractedData.name || "",
             extractedData.description,
             imageHash
-        );
+        ); */
+
+        const jsonHash = "bafkreigfekxuwzzywgvq7l4c6tfyimr4gmye6drqhsyl3e3hbdzilqeniq";
+        const imageHash = "bafybeic6f2btpoueqkbps5bhzcb5ria4umv5tu5bzvhwdgjyrjprwk5wgq";
 
         const zoraCoinMintingParams: ZoraCoinMintingParams = {
-            jsonHash: jsonHash,
+            jsonHash,
             recipient: recipientAddress,
             name: extractedData.name,
             description: extractedData.description,
-            imageHash: imageHash,
+            imageHash,
         };
 
         try {
@@ -235,7 +247,6 @@ export const zoraCoinMintingAction: Action = {
                     text: `Successfully minted the Zora Coin of ${extractedData.description} to ${recipient}. Check out the transaction: ${txUrl}`,
                     content: {
                         success: true,
-                        zoraCoinId: transferResp.id,
                         hash: transferResp.hash,
                         recipientAddress,
                         recipient: recipient,
@@ -247,7 +258,7 @@ export const zoraCoinMintingAction: Action = {
             }
             return true;
         } catch (error) {
-            elizaLogger.error("Error during minting the Zora Coin:", error);
+            elizaLogger.error("Error during minting the Zora Coin:", error.message);
             if (callback) {
                 callback({
                     text: `Error minting the Zora Coin: ${error.message}`,
@@ -262,14 +273,14 @@ export const zoraCoinMintingAction: Action = {
             {
                 user: "{{user1}}",
                 content: {
-                    text: "@auracoin Send a golden cat to 0x742d35Cc6634C0532925a3b844Bc454e4438f44",
+                    text: "@auracoin Send a golden cat to 0x742d35Cc6634C0532925a3b844Bc454e4438f445",
                     action: "MINT_ZORA_COIN",
                 },
             },
             {
                 user: "{{agentName}}",
                 content: {
-                    text: "Successfully minted Zora Coin of ID 1 to 0x742d35Cc6634C0532925a3b844Bc454e4438f44. Check the transaction at this URL:https://sepolia.basescan.org/tx/0x625f1ccf068bb71c5b0a385297f7a0bfa5a32b23f4d08c3e2c41158ac468e3a2 ---imageUrl:https://apricot-obvious-xerinae-783.mypinata.cloud/ipfs/bafybeidwnwsaadwtoregkjdfvaivmaslxragxzkjwk2zgp7jkw4th2xzm6---",
+                    text: "Successfully minted Zora Coin of ID 1 to 0x742d35Cc6634C0532925a3b844Bc454e4438f445. Check the transaction at this URL:https://sepolia.basescan.org/tx/0x625f1ccf068bb71c5b0a385297f7a0bfa5a32b23f4d08c3e2c41158ac468e3a2 ---imageUrl:https://apricot-obvious-xerinae-783.mypinata.cloud/ipfs/bafybeidwnwsaadwtoregkjdfvaivmaslxragxzkjwk2zgp7jkw4th2xzm6---",
                     action: "MINT_ZORA_COIN",
                 },
             },

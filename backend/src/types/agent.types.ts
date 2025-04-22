@@ -20,4 +20,5 @@ export interface AgentResponseContent {
   tokenUri: string;
   imageUrl: string;
   txUrl: string;
+  zoraCoinUrl: string;
 }
