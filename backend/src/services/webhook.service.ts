@@ -52,8 +52,8 @@ class WebhookService {
     if (!mintData) {
       throw new Error("No successfully minted ZoraCoin data found.");
     }
-    if (!mintData.text || !mintData.content.imageUrl) {
-      throw new Error("Mint data text or image URL is missing.");
+    if (!mintData.text || !mintData.content.zoraCoinUrl) {
+      throw new Error("Mint data text or Zora Coin Url is missing.");
     }
   }
 
@@ -72,7 +72,7 @@ class WebhookService {
         ],
       });
       logWithTimestamp(
-        `Published cast: ${castData.text} \nEmbedded image URL ${castData.zoraCoinUrl}`
+        `Published cast: ${castData.text} \nEmbedded Zora Coin URL ${castData.zoraCoinUrl}`
       );
       return neynarResponse;
     } catch (error) {
