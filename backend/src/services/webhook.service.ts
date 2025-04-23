@@ -45,12 +45,11 @@ class WebhookService {
     )) as AgentResponse;
 
     const responseData = agentResponse.data;
+    logWithTimestamp(`Agent response data: ${JSON.stringify(responseData)}`);
     const mintData = responseData.find((item) =>
       item.text.startsWith("Successfully minted Zora Coin")
     );
     this.validateData(mintData);
-    logWithTimestamp(`Agent response data: ${JSON.stringify(mintData)}`);
-
     const author = webhookData.author.username;
     const parentCastHash = webhookData.hash;
     const textToPublish = `@${author} ${mintData.text}`;
