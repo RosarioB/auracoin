@@ -33,7 +33,7 @@ class WebhookService {
       );
     }
     logWithTimestamp(`Received mention: ${text}`);
-    //logWithTimestamp(util.inspect(data, { depth: null, colors: true }));
+    //logWithTimestamp(util.inspect(webhookData, { depth: null, colors: true }));
     
     if (!this.agentId) {
       await this.initialize();

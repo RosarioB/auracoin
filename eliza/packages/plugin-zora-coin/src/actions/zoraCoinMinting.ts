@@ -27,7 +27,8 @@ import { uploadJsonToPinata } from "../lib/pinata.js";
 import { config } from "../lib/config.js";
 import { saveZoraCoin, countZoraCoins } from "../lib/api.js";
 import { getChainKeyById, getRecipientAddress } from "../lib/utils.js";
-import { createCoin, CreateCoinArgs } from "@zoralabs/coins-sdk";
+import { CreateCoinArgs } from "@zoralabs/coins-sdk";
+import { createCoinWithRetry } from "../lib/zora.js";
 
 export class ZoraCoinMintingAction {
     private currentChainKey: SupportedChain;
@@ -70,7 +71,7 @@ export class ZoraCoinMintingAction {
 
             elizaLogger.info(`Coin params: ${JSON.stringify(coinParams)}`);
 
-            const result = await createCoin(coinParams, walletClient, publicClient);
+            const result = await createCoinWithRetry(coinParams, walletClient, publicClient, params.jsonHash);
             const zoraCoinUrl = `https://zora.co/coin/base:${result.address}`
 
             elizaLogger.info(
