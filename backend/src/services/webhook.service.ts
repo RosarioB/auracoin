@@ -47,7 +47,7 @@ class WebhookService {
     const responseData = agentResponse.data;
     logWithTimestamp(`Agent response data: ${JSON.stringify(responseData)}`);
     const mintData = responseData.find((item) =>
-      item.text.startsWith("Successfully minted Zora Coin")
+      item.text.startsWith("Successfully minted a Zora Coin")
     );
     this.validateData(mintData);
     const author = webhookData.author.username;
