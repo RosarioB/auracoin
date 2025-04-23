@@ -1,5 +1,5 @@
 # Auracoin
-A project that integrates a Farcaster webhook to respond to mentions by generating AI-created Zora coins with images stored on IPFS, powered by an Eliza agent.
+This is AuraCoin: a Farcaster agent that creates Zora Coins using AI-generated images from DALL·E. The agent is powered by Eliza, stores the images on IPFS via Pinata, and mints the coins on Base.
 
 You can invoke Auracoin on Farcaster by casting:
 
@@ -11,7 +11,7 @@ You can invoke Auracoin on Farcaster by casting:
 @auracoin Send a golden sports car with red stripes to vitalik.eth
 ```
 ## Demo
-
+The project demo is available on [Youtube](https://www.youtube.com/watch?v=2wsWVNRtdg8)
 
 ## Docker
 Start the MongoDB container:
@@ -33,12 +33,10 @@ docker-compose down
 - **Environment Variables**: Create a `.env` file with the following:
 
     ```
+    ELIZA_URL=<your-eliza-url>
     MONGO_URL=<your-mongo-db-url> (i.e: mongodb://root:root@localhost:27017)
-    PRIVATE_KEY=<your-private-key>
     NEYNAR_API_KEY=<your-neynar-api-key>
     SIGNER_UUID=<your-signer-uuid>
-    PINATA_GATEWAY_URL=<your-pinata-gateway-url>
-    ELIZA_URL=<your-eliza-url>
     ```
 
 - **Start in Development Mode**: `pnpm run dev`
@@ -51,33 +49,15 @@ docker-compose down
 - **Environment Variables**: Add the following to the `.env` file:
 
     ```
-    OPENAI_API_KEY=<your-openai-api-key>
-    EVM_PRIVATE_KEY=<your-evm-private-key>
-    ETHEREUM_PROVIDER_BASESEPOLIA=<your-ethereum-provider-baseseppolia>
-    PINATA_JWT=<your-pinata-jwt>
-    PINATA_GATEWAY_URL=<your-pinata-gateway-url>
-    ERC721_ADDRESS=<your-erc721-address>
     BACKEND_URL=<your-backend-url>
+    ETHEREUM_PROVIDER_BASE=<your-ethereum-provider-basese>
+    EVM_PRIVATE_KEY=<your-evm-private-key>
     NEYNAR_API_KEY=<your-neynar-api-key>
+    OPENAI_API_KEY=<your-openai-api-key>
+    PINATA_GATEWAY_URL=<your-pinata-gateway-url>
+    PINATA_JWT=<your-pinata-jwt>
     ```
 
 - **Start in Development Mode**: `pnpm run dev`
 
 - **Start in Production Mode**: `pnpm run start`
-
-## Hardhat
-- **Project Setup**: `pnpm i`
-
-- **Environment Variables**: Create a `.env` file with the following:
-
-    ```
-    PRIVATE_KEY=<your-private-key>
-    ACCOUNT_ADDRESS=<your-account-address>
-    RPC_URL=<your-rpc-url>
-    ```
-
-- **Compile Contracts**: `npx hardhat compile`
-
-- **Deploy Contracts**: `npx hardhat ignition deploy --network baseSepolia ./ignition/modules/Auracoin.ts`
-
-- **Run Interaction Script**: Execute `interact.ts` on Base Sepolia: `npx hardhat run --network baseSepolia ./scripts/interact.ts`
