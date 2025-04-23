@@ -46,9 +46,12 @@ class WebhookService {
 
     const responseData = agentResponse.data;
     logWithTimestamp(`Agent response data: ${JSON.stringify(responseData)}`);
-    const mintData = responseData.find((item) =>
-      item.text.startsWith("Successfully minted a Zora Coin")
+    
+    // Find the item with the zoraCoinUrl in the content
+    const mintData = responseData.find((item) => 
+      item.content && item.content.zoraCoinUrl
     );
+    
     this.validateData(mintData);
     const author = webhookData.author.username;
     const parentCastHash = webhookData.hash;
@@ -66,9 +69,10 @@ class WebhookService {
     if (!mintData) {
       throw new Error("No successfully minted ZoraCoin data found.");
     }
-    if (!mintData.text || !mintData.content.zoraCoinUrl) {
+    if (!mintData.text || !mintData.content?.zoraCoinUrl) {
       throw new Error("Mint data text or Zora Coin Url is missing.");
     }
+    return true;
   }
 
   async publishCast(

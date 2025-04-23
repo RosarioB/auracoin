@@ -242,7 +242,6 @@ export const zoraCoinMintingAction: Action = {
 
             if (callback) {
                 callback({
-                    // This phrase is used in the webhook to identify the Zora Coin
                     text: `Successfully minted a Zora Coin with ${extractedData.description} for ${recipient}.`,
                     content: {
                         success: true,
