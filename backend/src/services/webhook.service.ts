@@ -7,6 +7,17 @@ import { PostCastResponse } from "@neynar/nodejs-sdk/build/api/index.js";
 import { errorWithTimestamp, logWithTimestamp } from "../utils/logging.js";
 
 class WebhookService {
+  private agentId: string;
+
+  constructor() {
+    this.agentId = "";
+  }
+
+  async initialize() {
+    this.agentId = await agentService.fetchAgent();
+    logWithTimestamp(`WebhookService initialized with agentId: ${this.agentId}`);
+  }
+
   async handleMention(event: WebhookEvent) {
     const webhookData = event.data;
     if (!webhookData) {
@@ -23,9 +34,13 @@ class WebhookService {
     }
     logWithTimestamp(`Received mention: ${text}`);
     //logWithTimestamp(util.inspect(data, { depth: null, colors: true }));
-    const agentId = await agentService.fetchAgent();
+    
+    if (!this.agentId) {
+      await this.initialize();
+    }
+    
     const agentResponse = (await agentService.sendMessageToAgent(
-      agentId,
+      this.agentId,
       text
     )) as AgentResponse;
 
@@ -82,4 +97,9 @@ class WebhookService {
   }
 }
 
-export default new WebhookService();
+const webhookService = new WebhookService();
+webhookService.initialize().catch(error => {
+  errorWithTimestamp("Failed to initialize WebhookService", error);
+});
+
+export default webhookService;

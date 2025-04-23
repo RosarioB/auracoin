@@ -84,7 +84,7 @@ export class ZoraCoinMintingAction {
                 jsonIpfsUrl: jsonUrl,
                 owner: account.address,
                 address: result.address,
-                symbol: result.deployment.symbol,
+                symbol,
                 txHash: result.hash,
                 payoutRecipient: result.deployment.payoutRecipient,
                 platformReferrer: result.deployment.platformReferrer,
@@ -241,7 +241,7 @@ export const zoraCoinMintingAction: Action = {
 
             if (callback) {
                 callback({
-                    text: `Successfully minted Zora Coin of ${extractedData.description} to ${recipient}.`,
+                    text: `Successfully minted a Zora Coin with ${extractedData.description} for ${recipient}.`,
                     content: {
                         success: true,
                         zoraCoinUrl: transferResp.zoraCoinUrl,
@@ -272,7 +272,7 @@ export const zoraCoinMintingAction: Action = {
             {
                 user: "{{agentName}}",
                 content: {
-                    text: "Successfully minted Zora Coin of ID 1 to 0x742d35Cc6634C0532925a3b844Bc454e4438f445. Check the transaction at this URL:https://sepolia.basescan.org/tx/0x625f1ccf068bb71c5b0a385297f7a0bfa5a32b23f4d08c3e2c41158ac468e3a2 ---imageUrl:https://apricot-obvious-xerinae-783.mypinata.cloud/ipfs/bafybeidwnwsaadwtoregkjdfvaivmaslxragxzkjwk2zgp7jkw4th2xzm6---",
+                    text: "Successfully minted a Zora Coin with a golden cat for 0x742d35Cc6634C0532925a3b844Bc454e4438f445.",
                     action: "MINT_ZORA_COIN",
                 },
             },
@@ -286,21 +286,21 @@ export const zoraCoinMintingAction: Action = {
             {
                 user: "{{agentName}}",
                 content: {
-                    text: "Successfully minted Zora Coin of ID 2 to @someaccount. Check the transaction at this URL:https://sepolia.basescan.org/tx/0x625f1ccf068bb71c5b0a385297f7a0bfa5a32b23f4d08c3e2c41158ac468e3a2 ---imageUrl:https://apricot-obvious-xerinae-783.mypinata.cloud/ipfs/bafybeidwnwsaadwtoregkjdfvaivmaslxragxzkjwk2zgp7jkw4th2xzm6---",
+                    text: "Successfully minted a Zora Coin with a cake for @someaccount.",
                     action: "MINT_ZORA_COIN",
                 },
             },
             {
                 user: "{{user1}}",
                 content: {
-                    text: "@auracoin Create a fabolus car and send it to vitalik.eth",
+                    text: "@auracoin Create a fabulous car and send it to vitalik.eth",
                     action: "MINT_ZORA_COIN",
                 },
             },
             {
                 user: "{{agentName}}",
                 content: {
-                    text: "Successfully minted Zora Coin of ID 3 to vitalik.eth. Check the transaction at this URL:https://sepolia.basescan.org/tx/0x625f1ccf068bb71c5b0a385297f7a0bfa5a32b23f4d08c3e2c41158ac468e3a2 ---imageUrl:https://apricot-obvious-xerinae-783.mypinata.cloud/ipfs/bafybeidwnwsaadwtoregkjdfvaivmaslxragxzkjwk2zgp7jkw4th2xzm6---",
+                    text: "Successfully minted Zora Coin with a fabulous car for vitalik.eth.",
                     action: "MINT_ZORA_COIN",
                 },
             },
